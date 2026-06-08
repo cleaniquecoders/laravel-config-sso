@@ -1,47 +1,62 @@
 {
-    "name": ":vendor_slug/:package_slug",
-    "description": ":package_description",
+    "name": "cleaniquecoders/laravel-config-sso",
+    "description": "Database-backed SSO provider configuration for Laravel with a Livewire + Flux admin UI.",
     "keywords": [
-        ":vendor_name",
+        "Cleanique Coders",
         "laravel",
-        ":package_slug"
+        "laravel-config-sso"
     ],
-    "homepage": "https://github.com/:vendor_slug/:package_slug",
+    "homepage": "https://github.com/cleaniquecoders/laravel-config-sso",
     "license": "MIT",
     "authors": [
         {
-            "name": ":author_name",
-            "email": "author@domain.com",
+            "name": "Nasrul Hazim Bin Mohamad",
+            "email": "nasrulhazim.m@gmail.com",
             "role": "Developer"
         }
     ],
     "require": {
-        "php": "^8.4",
+        "php": "^8.2",
+        "laravel/socialite": "^5.0",
         "spatie/laravel-package-tools": "^1.16",
-        "illuminate/contracts": "^11.0||^12.0||^13.0"
+        "illuminate/contracts": "^12.0||^13.0",
+        "illuminate/database": "^12.0||^13.0",
+        "illuminate/support": "^12.0||^13.0"
     },
     "require-dev": {
         "laravel/pint": "^1.14",
+        "livewire/flux": "^2.0",
+        "livewire/livewire": "^3.5||^4.0",
+        "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.8",
         "larastan/larastan": "^3.0",
-        "orchestra/testbench": "^11.0.0||^10.0.0||^9.0.0",
+        "orchestra/testbench": "^10.0||^11.0",
         "pestphp/pest": "^4.0",
         "pestphp/pest-plugin-arch": "^4.0",
         "pestphp/pest-plugin-laravel": "^4.0",
         "phpstan/extension-installer": "^1.4",
         "phpstan/phpstan-deprecation-rules": "^2.0",
         "phpstan/phpstan-phpunit": "^2.0",
+        "socialiteproviders/keycloak": "^5.0",
+        "socialiteproviders/microsoft-azure": "^4.0||^5.0",
         "spatie/laravel-ray": "^1.35"
+    },
+    "suggest": {
+        "livewire/livewire": "Required for the SSO providers admin screen (UI).",
+        "livewire/flux": "Flux UI components used by the optional admin screen.",
+        "socialiteproviders/keycloak": "Adds the Keycloak (OIDC) Socialite driver.",
+        "socialiteproviders/microsoft-azure": "Adds the Azure AD Socialite driver.",
+        "spatie/laravel-permission": "Enables automatic role assignment for users created on first SSO login."
     },
     "autoload": {
         "psr-4": {
-            "VendorName\\Skeleton\\": "src/",
-            "VendorName\\Skeleton\\Database\\Factories\\": "database/factories/"
+            "CleaniqueCoders\\ConfigSso\\": "src/",
+            "CleaniqueCoders\\ConfigSso\\Database\\Factories\\": "database/factories/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "VendorName\\Skeleton\\Tests\\": "tests/",
+            "CleaniqueCoders\\ConfigSso\\Tests\\": "tests/",
             "Workbench\\App\\": "workbench/app/"
         }
     },
@@ -63,10 +78,10 @@
     "extra": {
         "laravel": {
             "providers": [
-                "VendorName\\Skeleton\\SkeletonServiceProvider"
+                "CleaniqueCoders\\ConfigSso\\ConfigSsoServiceProvider"
             ],
             "aliases": {
-                "Skeleton": "VendorName\\Skeleton\\Facades\\Skeleton"
+                "ConfigSso": "CleaniqueCoders\\ConfigSso\\Facades\\ConfigSso"
             }
         }
     },

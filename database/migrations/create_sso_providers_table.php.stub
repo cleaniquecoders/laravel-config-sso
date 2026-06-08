@@ -1,0 +1,38 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create(config('config-sso.tables.providers', 'sso_providers'), function (Blueprint $table): void {
+            $table->id();
+            $table->uuid('uuid')->unique();
+            $table->string('name');
+            $table->string('driver');
+            $table->string('client_id');
+            // encrypted cast stores an opaque string — use text, never json.
+            $table->text('client_secret');
+            $table->string('redirect_url')->nullable();
+            $table->json('config')->nullable();
+            $table->boolean('is_active')->default(false);
+            $table->boolean('show_logo')->default(true);
+            $table->integer('sort_order')->default(0);
+            $table->string('icon')->nullable();
+            $table->string('button_label')->nullable();
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable();
+            $table->timestamps();
+
+            $table->index('driver');
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists(config('config-sso.tables.providers', 'sso_providers'));
+    }
+};
