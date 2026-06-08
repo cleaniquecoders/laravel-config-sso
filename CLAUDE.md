@@ -107,7 +107,30 @@ This package was extracted from an app. Keep it app-agnostic:
 
 Cover at minimum: uuid + secret encryption, `active` scope, `toSocialiteConfig()`, callback
 create-and-link, callback existing-link (no duplicate), self-registration disabled, inactive
-driver 404, and the Livewire CRUD + gate. Socialite is mocked via `Socialite::shouldReceive`.
+driver 404, the Livewire CRUD + gate, the `<x-config-sso::buttons />` component, and the full
+end-to-end journey (`tests/Feature/EndToEndTest.php`). Socialite is mocked via
+`Socialite::shouldReceive` — the helpers `fakeSocialiteUser()` / `mockSocialiteDriver()` live in
+`tests/Pest.php`.
+
+## Workbench (manual end-to-end)
+
+`workbench/` is a runnable Testbench app for clicking through the package; `testbench.yaml` wires
+it up. `composer serve` (= `build` + `testbench serve`) creates the SQLite DB, runs migrations,
+seeds demo data, and boots at `:8000`.
+
+- `WorkbenchServiceProvider` sets `config-sso.user_model` and defines the `admin.manage.sso` gate.
+- `workbench/routes/web.php`: `/` (login + buttons), `/dashboard`, `/dev/login` (auth as seeded
+  admin), `/logout`. The admin UI route comes from the package itself (`config-sso.admin`).
+- `workbench/resources/views/components/layouts/app.blade.php` is the layout the full-page admin
+  Livewire component renders into — it pulls in `@livewireScripts` + `@fluxScripts`.
+- Workbench migrations `require` the package `.php.stub` files so the schema never drifts.
+- **Gotcha:** do NOT add a `users` migration in `workbench/database/migrations` — Testbench
+  already loads its own `testbench_create_users_table` and a second one collides.
+- **Gotcha:** the `testbench.yaml` `build:` list only understands recipe tokens
+  (`create-sqlite-db`, `asset-publish`, …), NOT arbitrary `migrate:fresh --seed`. Migrate + seed
+  are run explicitly in the composer `build` script, and seeding needs the fully-qualified
+  `--class='Workbench\Database\Seeders\DatabaseSeeder'` (plain `--seed` looks for a root
+  `DatabaseSeeder` that doesn't exist).
 
 ## Workflow conventions
 

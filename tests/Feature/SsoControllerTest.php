@@ -2,34 +2,9 @@
 
 use CleaniqueCoders\ConfigSso\Models\SsoProvider;
 use CleaniqueCoders\ConfigSso\Models\SsoUserProvider;
-use Laravel\Socialite\Contracts\Provider;
-use Laravel\Socialite\Facades\Socialite;
-use Laravel\Socialite\Two\User as SocialiteUser;
 use Workbench\App\Models\User;
 
-function fakeSocialiteUser(string $email = 'jane@example.com', string $id = 'remote-123'): SocialiteUser
-{
-    $user = (new SocialiteUser)->map([
-        'id' => $id,
-        'name' => 'Jane Doe',
-        'nickname' => 'jane',
-        'email' => $email,
-    ]);
-
-    $user->token = 'access-token';
-    $user->refreshToken = 'refresh-token';
-    $user->expiresIn = 3600;
-
-    return $user;
-}
-
-function mockSocialiteDriver(string $driver, SocialiteUser $user): void
-{
-    $provider = Mockery::mock(Provider::class);
-    $provider->shouldReceive('user')->andReturn($user);
-
-    Socialite::shouldReceive('driver')->with($driver)->andReturn($provider);
-}
+// fakeSocialiteUser() and mockSocialiteDriver() live in tests/Pest.php.
 
 beforeEach(function () {
     $this->provider = SsoProvider::create([

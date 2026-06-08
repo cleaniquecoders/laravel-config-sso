@@ -123,6 +123,31 @@ ConfigSso::driverFields('keycloak'); // ['base_url', 'realms']
 composer test
 ```
 
+The suite (Pest + Orchestra Testbench) covers the models, the redirect/callback flow (Socialite
+mocked), the `ConfigSso` facade, the Livewire admin component, the `<x-config-sso::buttons />`
+component, and a full **end-to-end sign-in journey** (`tests/Feature/EndToEndTest.php`).
+
+## Local development (try it in a real app)
+
+A [Testbench workbench](https://packages.tools/testbench) app lives in `workbench/` so you can
+click through the package in a browser without wiring it into a host project:
+
+```bash
+composer install
+composer serve
+```
+
+`composer serve` builds a SQLite database, runs the migrations, seeds demo data, and boots the
+app at `http://127.0.0.1:8000`. Then:
+
+- **`/`** — the login page rendering `<x-config-sso::buttons />`
+- **`/dev/login`** — log in as the seeded admin (`admin@example.com` / `password`)
+- **`/admin/settings/sso`** — the Livewire + Flux admin UI
+
+> Seeded providers use placeholder credentials, so clicking a button reaches the real IdP and
+> fails at *their* end — edit a provider with real `client_id` / `client_secret` to complete a
+> full OAuth round trip. Run `composer build` any time to reset the demo database.
+
 ## Changelog
 
 Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.

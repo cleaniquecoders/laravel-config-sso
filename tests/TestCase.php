@@ -5,6 +5,7 @@ namespace CleaniqueCoders\ConfigSso\Tests;
 use CleaniqueCoders\ConfigSso\ConfigSsoServiceProvider;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Routing\Router;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Schema;
 use Laravel\Socialite\SocialiteServiceProvider;
 use Livewire\LivewireServiceProvider;
@@ -41,8 +42,10 @@ class TestCase extends Orchestra
     protected function defineRoutes($router): void
     {
         /** @var Router $router */
-        $router->get('dashboard', fn () => 'home')->name('dashboard');
-        $router->get('login', fn () => 'login')->name('login');
+        // A realistic login page that uses the package's login-buttons component.
+        $router->get('login', fn () => Blade::render('<x-config-sso::buttons />'))
+            ->name('login');
+        $router->get('dashboard', fn () => 'dashboard')->name('dashboard');
     }
 
     protected function defineDatabaseMigrations(): void
