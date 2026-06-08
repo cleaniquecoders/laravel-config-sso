@@ -227,11 +227,21 @@ class SsoProviders extends Component
 
     public function render(): View
     {
-        return view('config-sso::livewire.sso-providers', [
+        $view = view('config-sso::livewire.sso-providers', [
             'providers' => SsoProvider::orderBy('sort_order')->orderBy('name')->get(),
             'driverOptions' => collect(config('config-sso.drivers', []))
                 ->map(fn (array $d, string $k): string => $d['label'] ?? ucfirst($k))
                 ->all(),
         ]);
+
+        // Render full-page into the configured layout (default: the package's own),
+        // so the route never depends on the host's Livewire `component_layout`.
+        $layout = config('config-sso.admin.layout', 'config-sso::layouts.app');
+
+        if (is_string($layout) && $layout !== '') {
+            $view->layout($layout);
+        }
+
+        return $view;
     }
 }

@@ -137,6 +137,11 @@ return [
         'name' => 'config-sso.admin',
         'middleware' => ['web', 'auth'],
         'component' => SsoProviders::class,
+        // Layout the full-page admin component renders into. Defaults to the
+        // package's self-contained layout so the route works anywhere. Point this
+        // at your app layout (e.g. 'components.layouts.app') to embed it in your
+        // own chrome, or set null to use Livewire's configured default.
+        'layout' => env('CONFIG_SSO_ADMIN_LAYOUT', 'config-sso::layouts.app'),
     ],
 
 ];
