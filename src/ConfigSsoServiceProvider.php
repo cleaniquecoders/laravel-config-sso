@@ -3,6 +3,8 @@
 namespace CleaniqueCoders\ConfigSso;
 
 use CleaniqueCoders\ConfigSso\Livewire\SsoProviders;
+use CleaniqueCoders\ConfigSso\View\Components\Sso;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Event;
 use Livewire\Livewire;
 use SocialiteProviders\Manager\SocialiteWasCalled;
@@ -40,7 +42,7 @@ class ConfigSsoServiceProvider extends PackageServiceProvider
                     ->endWith(function (InstallCommand $command): void {
                         $command->info('Next steps:');
                         $command->line('  1. Set config-sso.user_model + config-sso.gate in config/config-sso.php');
-                        $command->line('  2. Add <x-config-sso::buttons /> to your login view');
+                        $command->line('  2. Add <x-sso /> to your login view');
                         $command->line('  3. (optional) composer require livewire/livewire livewire/flux for the admin UI');
                     });
             });
@@ -50,6 +52,7 @@ class ConfigSsoServiceProvider extends PackageServiceProvider
     {
         $this->registerSocialiteProviders();
         $this->registerLivewireComponents();
+        $this->registerBladeComponents();
     }
 
     /**
@@ -77,6 +80,19 @@ class ConfigSsoServiceProvider extends PackageServiceProvider
     {
         if (class_exists(Livewire::class) && config('config-sso.admin.enabled', true)) {
             Livewire::component('config-sso.admin', SsoProviders::class);
+        }
+    }
+
+    /**
+     * Register the login-buttons Blade component as a short global tag
+     * (default <x-sso />; configurable via config-sso.component, null to skip).
+     */
+    protected function registerBladeComponents(): void
+    {
+        $tag = config('config-sso.component', 'sso');
+
+        if (is_string($tag) && $tag !== '') {
+            Blade::component(Sso::class, $tag);
         }
     }
 }

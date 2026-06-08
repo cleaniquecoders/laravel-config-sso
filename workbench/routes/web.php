@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Workbench\App\Models\User;
 
-// Public login page — shows the package's <x-config-sso::buttons /> component.
+// Public login page — shows the package's <x-sso /> component.
 Route::get('/', fn () => view('login'))->name('login');
 
 // Authenticated landing page.

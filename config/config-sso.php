@@ -38,6 +38,16 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Login Buttons Component
+    |--------------------------------------------------------------------------
+    | The Blade tag for the login-buttons component. Defaults to <x-sso />.
+    | Usage: <x-sso />, <x-sso provider="github" />, <x-sso only="github,keycloak" />.
+    | Set to null to skip registering a global tag (e.g. to avoid a name clash).
+    */
+    'component' => 'sso',
+
+    /*
+    |--------------------------------------------------------------------------
     | Authorization Gate
     |--------------------------------------------------------------------------
     | Ability string (or callable) checked before the admin UI loads. Set to

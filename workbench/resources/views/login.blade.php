@@ -20,7 +20,7 @@
         @endif
 
         {{-- The package component — this is the whole integration on the login page. --}}
-        <x-config-sso::buttons />
+        <x-sso />
 
         <p class="text-center text-xs text-zinc-400">
             <a href="{{ route('dev.login') }}" class="underline">Skip to admin UI (dev)</a>

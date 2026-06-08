@@ -39,7 +39,7 @@ Then:
 2. Drop the login buttons into your login view — no extra markup required:
 
    ```blade
-   <x-config-sso::buttons />
+   <x-sso />
    ```
 
 3. (Optional) install the admin UI and extra drivers:
@@ -79,13 +79,18 @@ prefixes/middleware) is documented inline in the published config file.
 
 ### Render login buttons
 
-The bundled Blade component renders every active provider (Tailwind-styled, dark-mode ready,
-no Flux dependency so it's safe on a public login page):
+The bundled `<x-sso />` Blade component renders provider buttons (Tailwind-styled, dark-mode
+ready, no Flux dependency so it's safe on a public login page):
 
 ```blade
-<x-config-sso::buttons />
-<x-config-sso::buttons class="mt-4" />   {{-- merge your own classes --}}
+<x-sso />                              {{-- all active providers --}}
+<x-sso provider="github" />           {{-- a single provider --}}
+<x-sso only="github,keycloak" />      {{-- a subset, in the given order --}}
+<x-sso class="mt-4" />                 {{-- merge your own classes --}}
 ```
+
+> The tag is configurable via `config-sso.component` (default `sso`) — set it to another name
+> to avoid clashes, or `null` to not register a global tag.
 
 Or build the markup yourself with the facade:
 
@@ -124,7 +129,7 @@ composer test
 ```
 
 The suite (Pest + Orchestra Testbench) covers the models, the redirect/callback flow (Socialite
-mocked), the `ConfigSso` facade, the Livewire admin component, the `<x-config-sso::buttons />`
+mocked), the `ConfigSso` facade, the Livewire admin component, the `<x-sso />`
 component, and a full **end-to-end sign-in journey** (`tests/Feature/EndToEndTest.php`).
 
 ## Local development (try it in a real app)
@@ -140,7 +145,7 @@ composer serve
 `composer serve` builds a SQLite database, runs the migrations, seeds demo data, and boots the
 app at `http://127.0.0.1:8000`. Then:
 
-- **`/`** — the login page rendering `<x-config-sso::buttons />`
+- **`/`** — the login page rendering `<x-sso />`
 - **`/dev/login`** — log in as the seeded admin (`admin@example.com` / `password`)
 - **`/admin/settings/sso`** — the Livewire + Flux admin UI
 

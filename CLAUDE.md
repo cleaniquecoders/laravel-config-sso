@@ -33,7 +33,7 @@ then finds-or-creates the local user and links the identity in `sso_user_provide
 | Public API | `ConfigSso` + `Facades\ConfigSso` — `enabled()`, `providers()`, `drivers()`, `driverFields()` |
 | Admin UI | `Livewire\SsoProviders` + `resources/views/livewire/sso-providers.blade.php` (Flux, opt-in) |
 | Wiring | `ConfigSsoServiceProvider` (config, views, routes, migrations, Socialite drivers, Livewire, install command) |
-| Login buttons | `resources/views/components/buttons.blade.php` → `<x-config-sso::buttons />` (Flux-free, public-page safe) |
+| Login buttons | `View\Components\Sso` + `resources/views/components/sso.blade.php` → `<x-sso />` (Flux-free, public-page safe) |
 
 Routes: `sso.redirect` (`{provider}/redirect`), `sso.callback` (`{provider}/callback`), and an
 optional full-page admin route. Livewire component alias: `config-sso.admin`.
@@ -44,9 +44,12 @@ The package is designed to install into any Laravel app in one step — do not r
 
 - **`php artisan config-sso:install`** (spatie `hasInstallCommand`) publishes config, publishes +
   runs migrations, and prints next steps. Tags: `laravel-config-sso-{config,migrations,views}`.
-- **`<x-config-sso::buttons />`** — a package anonymous component (resolves via the `config-sso`
-  view namespace → `resources/views/components/buttons.blade.php`). It is **pure Tailwind, no
-  Flux**, because login pages are public and may not load Flux. Keep it dependency-free.
+- **`<x-sso />`** — a class-based component (`View\Components\Sso` → `config-sso::components.sso`)
+  registered as a short global tag in `packageBooted()` via `Blade::component(Sso::class, $tag)`,
+  where `$tag = config('config-sso.component', 'sso')` (null/empty skips registration). Supports
+  `<x-sso provider="github" />` (single) and `<x-sso only="github,keycloak" />` (subset, ordered).
+  It is **pure Tailwind, no Flux**, because login pages are public and may not load Flux. Keep it
+  dependency-free.
 - The admin UI (`config-sso.admin`) is the only Flux-dependent surface and stays opt-in.
 
 ## Decoupling rules (DO NOT regress)
@@ -107,7 +110,7 @@ This package was extracted from an app. Keep it app-agnostic:
 
 Cover at minimum: uuid + secret encryption, `active` scope, `toSocialiteConfig()`, callback
 create-and-link, callback existing-link (no duplicate), self-registration disabled, inactive
-driver 404, the Livewire CRUD + gate, the `<x-config-sso::buttons />` component, and the full
+driver 404, the Livewire CRUD + gate, the `<x-sso />` component (all/`provider`/`only`), and the full
 end-to-end journey (`tests/Feature/EndToEndTest.php`). Socialite is mocked via
 `Socialite::shouldReceive` — the helpers `fakeSocialiteUser()` / `mockSocialiteDriver()` live in
 `tests/Pest.php`.

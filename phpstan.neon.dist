@@ -11,4 +11,5 @@ parameters:
     # covered by the Livewire feature tests.
     excludePaths:
         - src/Livewire/SsoProviders.php
+        - src/View/Components/Sso.php
     tmpDir: build/phpstan

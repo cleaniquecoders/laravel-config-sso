@@ -43,7 +43,7 @@ class TestCase extends Orchestra
     {
         /** @var Router $router */
         // A realistic login page that uses the package's login-buttons component.
-        $router->get('login', fn () => Blade::render('<x-config-sso::buttons />'))
+        $router->get('login', fn () => Blade::render('<x-sso />'))
             ->name('login');
         $router->get('dashboard', fn () => 'dashboard')->name('dashboard');
     }
