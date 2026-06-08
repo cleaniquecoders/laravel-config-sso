@@ -13,6 +13,10 @@ class WorkbenchServiceProvider extends ServiceProvider
         // Point the package at the workbench user model.
         config()->set('config-sso.user_model', User::class);
         config()->set('auth.providers.users.model', User::class);
+
+        // Demonstrate the host-layout override: render the admin UI inside the
+        // workbench's own layout (with nav) instead of the package's fallback.
+        config()->set('config-sso.admin.layout', 'components.layouts.app');
     }
 
     public function boot(): void

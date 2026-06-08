@@ -102,9 +102,20 @@ This package was extracted from an app. Keep it app-agnostic:
 > The migrations use **no foreign-key constraints** on `user_id` / `sso_provider_id` because
 > the users/providers table names are host-configurable; they use plain indexes instead.
 
-> Full-page admin route relies on Livewire's default layout (`components.layouts.app`). Hosts
-> without that layout should embed `<livewire:config-sso.admin />` in their own page instead
-> (set `config-sso.admin.route = false`).
+> **Full-page admin layout (do NOT regress):** the `SsoProviders` component MUST set its own
+> layout in `render()` via `$view->layout(config('config-sso.admin.layout'))`, defaulting to the
+> package's own `config-sso::layouts.app`. Never rely on Livewire's implicit page layout —
+> `config('livewire.component_layout')` defaults to `layouts::app`, an unregistered namespaced
+> view, so the route 500s with **"No hint path defined for [layouts]"** in any app that doesn't
+> happen to define it (this exact bug shipped in 1.0.0, fixed in 1.0.1). Hosts override
+> `config-sso.admin.layout` to their own layout (e.g. `components.layouts.app`) or embed
+> `<livewire:config-sso.admin />` and set `config-sso.admin.route = false`. Covered by
+> `tests/Feature/AdminPageTest.php` (HTTP render of the route — `Livewire::test()` alone does
+> NOT exercise the page layout).
+
+> The package ships a self-contained fallback layout (`resources/views/layouts/app.blade.php`)
+> that loads Tailwind (CDN), `@livewireStyles/@livewireScripts`, and `@fluxAppearance/@fluxScripts`
+> so the admin route works out of the box. The admin UI requires Livewire + Flux regardless.
 
 ## Testing strategy
 
