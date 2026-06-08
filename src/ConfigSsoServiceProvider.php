@@ -6,6 +6,7 @@ use CleaniqueCoders\ConfigSso\Livewire\SsoProviders;
 use Illuminate\Support\Facades\Event;
 use Livewire\Livewire;
 use SocialiteProviders\Manager\SocialiteWasCalled;
+use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -26,7 +27,23 @@ class ConfigSsoServiceProvider extends PackageServiceProvider
             ->hasMigrations([
                 'create_sso_providers_table',
                 'create_sso_user_providers_table',
-            ]);
+            ])
+            ->hasInstallCommand(function (InstallCommand $command): void {
+                $command
+                    ->startWith(function (InstallCommand $command): void {
+                        $command->info('Installing Laravel Config SSO…');
+                    })
+                    ->publishConfigFile()
+                    ->publishMigrations()
+                    ->askToRunMigrations()
+                    ->askToStarRepoOnGitHub('cleaniquecoders/laravel-config-sso')
+                    ->endWith(function (InstallCommand $command): void {
+                        $command->info('Next steps:');
+                        $command->line('  1. Set config-sso.user_model + config-sso.gate in config/config-sso.php');
+                        $command->line('  2. Add <x-config-sso::buttons /> to your login view');
+                        $command->line('  3. (optional) composer require livewire/livewire livewire/flux for the admin UI');
+                    });
+            });
     }
 
     public function packageBooted(): void

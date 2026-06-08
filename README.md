@@ -17,39 +17,49 @@ redirect/callback flow that finds-or-creates and links the local user — plus a
 - 🧱 App-agnostic — configurable user model, table names, and authorization gate
 - ✅ Laravel **12 & 13**, PHP **8.2+**
 
-## Installation
+## Quickstart
 
 ```bash
 composer require cleaniquecoders/laravel-config-sso
+
+# Publishes the config, publishes + runs the migrations, all in one step
+php artisan config-sso:install
 ```
 
-Publish and run the migrations:
+Then:
+
+1. Point the package at your user model and the gate that guards the admin UI in
+   `config/config-sso.php`:
+
+   ```php
+   'user_model' => App\Models\User::class,
+   'gate'       => 'admin.manage.sso',   // or null to disable the check
+   ```
+
+2. Drop the login buttons into your login view — no extra markup required:
+
+   ```blade
+   <x-config-sso::buttons />
+   ```
+
+3. (Optional) install the admin UI and extra drivers:
+
+   ```bash
+   composer require livewire/livewire livewire/flux                 # admin UI
+   composer require socialiteproviders/keycloak socialiteproviders/microsoft-azure   # Keycloak / Azure AD
+   ```
+
+That's it — add a provider in the admin screen (or seed `SsoProvider` directly) and it appears
+on your login page.
+
+## Installation (manual)
+
+If you prefer not to use the installer:
 
 ```bash
-php artisan vendor:publish --tag="laravel-config-sso-migrations"
-php artisan migrate
-```
-
-Publish the config:
-
-```bash
+php artisan vendor:publish --tag="laravel-config-sso-migrations" && php artisan migrate
 php artisan vendor:publish --tag="laravel-config-sso-config"
-```
-
-Optionally publish the views to customize the admin UI:
-
-```bash
-php artisan vendor:publish --tag="laravel-config-sso-views"
-```
-
-### Optional drivers & UI
-
-```bash
-# Keycloak (OIDC) and/or Azure AD drivers
-composer require socialiteproviders/keycloak socialiteproviders/microsoft-azure
-
-# Admin UI (Livewire 4 + Flux)
-composer require livewire/livewire livewire/flux
+php artisan vendor:publish --tag="laravel-config-sso-views"   # optional — customize the UI
 ```
 
 ## Configuration
@@ -69,13 +79,19 @@ prefixes/middleware) is documented inline in the published config file.
 
 ### Render login buttons
 
-```php
-use CleaniqueCoders\ConfigSso\Facades\ConfigSso;
+The bundled Blade component renders every active provider (Tailwind-styled, dark-mode ready,
+no Flux dependency so it's safe on a public login page):
 
-@foreach (ConfigSso::providers() as $provider)
-    <a href="{{ route('sso.redirect', $provider->driver) }}">
-        Continue with {{ $provider->name }}
-    </a>
+```blade
+<x-config-sso::buttons />
+<x-config-sso::buttons class="mt-4" />   {{-- merge your own classes --}}
+```
+
+Or build the markup yourself with the facade:
+
+```blade
+@foreach (\CleaniqueCoders\ConfigSso\Facades\ConfigSso::providers() as $provider)
+    <a href="{{ route('sso.redirect', $provider->driver) }}">Continue with {{ $provider->name }}</a>
 @endforeach
 ```
 
