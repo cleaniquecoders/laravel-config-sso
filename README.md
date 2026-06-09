@@ -89,6 +89,10 @@ ready, no Flux dependency so it's safe on a public login page):
 <x-sso class="mt-4" />                 {{-- merge your own classes --}}
 ```
 
+<p align="center">
+  <img src="assets/login-buttons.png" alt="Login page rendered with the &lt;x-sso /&gt; component" width="600">
+</p>
+
 > The tag is configurable via `config-sso.component` (default `sso`) — set it to another name
 > to avoid clashes, or `null` to not register a global tag.
 
@@ -112,6 +116,13 @@ When Livewire is installed, a full-page management screen is registered at
 ```blade
 <livewire:config-sso.admin />
 ```
+
+It lists every provider and lets you create, edit, enable/disable, and delete them — the client
+secret is encrypted at rest and never shown back:
+
+<p align="center">
+  <img src="assets/admin-ui.png" alt="Livewire + Flux admin UI for managing SSO providers" width="700">
+</p>
 
 ### The `ConfigSso` facade
 
