@@ -42,20 +42,20 @@
                         </td>
                         <td class="px-4 py-3 text-right">
                             <flux:dropdown position="bottom" align="end">
-                                <flux:button variant="ghost" size="sm" icon="ellipsis" class="cursor-pointer" />
+                                <flux:button variant="ghost" size="sm" icon="ellipsis-horizontal" class="cursor-pointer" />
                                 <flux:menu>
                                     <flux:menu.item icon="pencil" wire:click="openEditModal('{{ $provider->uuid }}')">
                                         Edit
                                     </flux:menu.item>
                                     <flux:menu.item
-                                        icon="{{ $provider->is_active ? 'eye-off' : 'eye' }}"
+                                        icon="{{ $provider->is_active ? 'eye-slash' : 'eye' }}"
                                         wire:click="toggleActive('{{ $provider->uuid }}')"
                                     >
                                         {{ $provider->is_active ? 'Disable' : 'Enable' }}
                                     </flux:menu.item>
                                     <flux:menu.separator />
                                     <flux:menu.item
-                                        icon="trash-2"
+                                        icon="trash"
                                         variant="danger"
                                         wire:click="confirmDelete('{{ $provider->uuid }}')"
                                     >
