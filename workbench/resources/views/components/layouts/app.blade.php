@@ -4,7 +4,12 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ $title ?? 'Config SSO demo' }}</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    @if (($configSsoDemoCss ?? null) && is_file($configSsoDemoCss))
+        <link rel="stylesheet" href="{{ route('config-sso.demo.css') }}">
+    @else
+        {{-- Fallback: run `npm install && npm run build:css` for the compiled Flux styles. --}}
+        <script src="https://cdn.tailwindcss.com"></script>
+    @endif
     @livewireStyles
     @fluxAppearance
 </head>

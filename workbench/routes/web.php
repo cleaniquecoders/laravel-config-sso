@@ -4,6 +4,15 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Workbench\App\Models\User;
 
+// Serve the compiled Tailwind + Flux stylesheet for the demo (built via npm run build:css).
+Route::get('/_config-sso/app.css', function () {
+    $path = dirname(__DIR__).'/public/build/app.css';
+
+    abort_unless(is_file($path), 404);
+
+    return response()->file($path, ['Content-Type' => 'text/css']);
+})->name('config-sso.demo.css');
+
 // Public login page — shows the package's <x-sso /> component.
 Route::get('/', fn () => view('login'))->name('login');
 

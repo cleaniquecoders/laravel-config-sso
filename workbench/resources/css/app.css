@@ -1,0 +1,8 @@
+@import 'tailwindcss';
+@import '../../../vendor/livewire/flux/dist/flux.css';
+
+/* Scan Flux's component stubs and the package + workbench Blade views so every
+   utility class used in the admin UI ends up in the compiled stylesheet. */
+@source '../../../vendor/livewire/flux/stubs/**/*.blade.php';
+@source '../../../resources/views/**/*.blade.php';
+@source '../views/**/*.blade.php';
