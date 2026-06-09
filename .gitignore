@@ -28,7 +28,6 @@ _ide_helper_models.php
 # Misc
 phpunit.xml
 phpstan.neon
-/docs
 /coverage
 
 # Workbench (Testbench) runtime artifacts — keep source, ignore generated
