@@ -66,6 +66,7 @@
         "post-autoload-dump": "@composer run prepare",
         "prepare": "@php vendor/bin/testbench package:discover --ansi",
         "build": [
+            "@composer run prepare",
             "@php vendor/bin/testbench workbench:create-sqlite-db --ansi",
             "@php vendor/bin/testbench migrate:fresh --force --ansi",
             "@php vendor/bin/testbench db:seed --class='Workbench\\Database\\Seeders\\DatabaseSeeder' --force --ansi"
