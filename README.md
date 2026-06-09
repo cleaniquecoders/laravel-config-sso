@@ -160,6 +160,14 @@ app at `http://127.0.0.1:8000`. Then:
 - **`/dev/login`** — log in as the seeded admin (`admin@example.com` / `password`)
 - **`/admin/settings/sso`** — the Livewire + Flux admin UI
 
+For the admin UI to render with the real **Flux** styles (instead of the Tailwind CDN
+fallback), compile the demo stylesheet once:
+
+```bash
+npm install
+npm run build:css
+```
+
 > Seeded providers use placeholder credentials, so clicking a button reaches the real IdP and
 > fails at *their* end — edit a provider with real `client_id` / `client_secret` to complete a
 > full OAuth round trip. Run `composer build` any time to reset the demo database.
