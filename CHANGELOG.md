@@ -2,6 +2,20 @@
 
 All notable changes to `laravel-config-sso` will be documented in this file.
 
+## 1.0.2 - 2026-06-09
+
+### Fixes
+
+- **Admin UI icons:** the Livewire + Flux admin screen used Lucide icon names (`ellipsis`, `trash-2`, `eye-off`), which Flux (Heroicons) can't resolve — `/admin/settings/sso` threw *"Flux component [icon.ellipsis] does not exist"*. Switched to the Heroicon equivalents (`ellipsis-horizontal`, `trash`, `eye-slash`).
+
+### Tooling & docs
+
+- **Workbench:** `composer serve`/`build` now re-discovers the package provider, fixing a stale-Testbench-cache boot where every package route 500'd. The demo can also serve a compiled Tailwind + Flux stylesheet instead of the CDN.
+- **Tests:** added `FluxIconTest`, a static guard that fails when the admin view references an icon Flux doesn't ship (HTTP tests can't catch this — Flux renders icons as no-ops in the test harness).
+- **Docs:** added a full `docs/` tree (architecture, development, configuration, API/usage) and slimmed the README to a minimal overview with screenshots.
+
+**Full Changelog:** https://github.com/cleaniquecoders/laravel-config-sso/compare/1.0.1...1.0.2
+
 ## 1.0.1 - 2026-06-08
 
 ### Fixed
@@ -52,6 +66,7 @@ Initial release of **laravel-config-sso** — database-backed SSO provider manag
 ```bash
 composer require cleaniquecoders/laravel-config-sso
 php artisan config-sso:install
+
 
 
 ```
