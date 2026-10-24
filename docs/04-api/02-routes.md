@@ -32,6 +32,13 @@ unknown or inactive driver returns `404`.
    redirect home. If self-registration is disabled and no user matches, redirect to login with
    "No matching account found for this SSO identity."
 
+   An **unverified** email match is *claimed*, not handed over: whoever registered that account may
+   not own the address. Before the SSO owner is signed in, the account's password and remember
+   token are rotated and `email_verified_at` is set, then
+   `CleaniqueCoders\ConfigSso\Events\UnverifiedAccountClaimed` is dispatched — listen for it to
+   revoke app-specific credentials (2FA secrets, API tokens, passkeys). New users are written with
+   `forceFill`, so `email_verified_at` is set even when it is not mass-assignable.
+
 `token_data` stores `{ token, refresh_token, expires_in }`, encrypted at rest.
 
 ## Redirect targets
