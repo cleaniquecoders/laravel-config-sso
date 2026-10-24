@@ -2,6 +2,22 @@
 
 All notable changes to `laravel-config-sso` will be documented in this file.
 
+## 1.1.0 - 2026-10-24
+
+### Security
+
+- An SSO sign-in that matches an **unverified** local account by email now claims it: password and remember token are rotated and the email is marked verified before sign-in (prevents pre-account takeover).
+
+### Added
+
+- `CleaniqueCoders\\ConfigSso\\Events\\UnverifiedAccountClaimed` — listen to revoke app-specific credentials (2FA, API tokens, passkeys).
+
+### Fixed
+
+- SSO-created users are written with `forceFill`, so `email_verified_at` is set even when it is not mass-assignable.
+
+**Full Changelog**: https://github.com/cleaniquecoders/laravel-config-sso/compare/1.0.2...1.1.0
+
 ## 1.0.2 - 2026-06-09
 
 ### Fixes
@@ -66,6 +82,7 @@ Initial release of **laravel-config-sso** — database-backed SSO provider manag
 ```bash
 composer require cleaniquecoders/laravel-config-sso
 php artisan config-sso:install
+
 
 
 
