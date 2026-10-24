@@ -1,7 +1,10 @@
 <?php
 
+use CleaniqueCoders\ConfigSso\Events\UnverifiedAccountClaimed;
 use CleaniqueCoders\ConfigSso\Models\SsoProvider;
 use CleaniqueCoders\ConfigSso\Models\SsoUserProvider;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Hash;
 use Workbench\App\Models\User;
 
 // fakeSocialiteUser() and mockSocialiteDriver() live in tests/Pest.php.
@@ -73,3 +76,55 @@ it('404s for an unknown or inactive driver', function () {
 
     $this->get('/auth/sso/github/callback')->assertNotFound();
 });
+
+it('revokes the registrant credentials before handing an unverified account to sso', function () {
+    Event::fake([UnverifiedAccountClaimed::class]);
+
+    $squatter = User::create([
+        'name' => 'Squatter',
+        'email' => 'jane@example.com',
+        'password' => 'squatter-pass',
+        'remember_token' => 'squatter-token',
+    ]);
+
+    mockSocialiteDriver('github', fakeSocialiteUser());
+
+    $this->get('/auth/sso/github/callback')->assertRedirect(route('dashboard'));
+
+    $squatter->refresh();
+    expect(Hash::check('squatter-pass', $squatter->password))->toBeFalse()
+        ->and($squatter->remember_token)->not->toBe('squatter-token')
+        ->and($squatter->email_verified_at)->not->toBeNull();
+    $this->assertAuthenticatedAs($squatter);
+    Event::assertDispatched(UnverifiedAccountClaimed::class);
+});
+
+it('leaves a verified account credentials alone', function () {
+    $owner = User::create(['name' => 'Jane', 'email' => 'jane@example.com', 'password' => 'owner-pass']);
+    $owner->forceFill(['email_verified_at' => now()])->save();
+
+    mockSocialiteDriver('github', fakeSocialiteUser());
+
+    $this->get('/auth/sso/github/callback')->assertRedirect(route('dashboard'));
+
+    expect(Hash::check('owner-pass', $owner->fresh()->password))->toBeTrue();
+});
+
+it('marks a user created by sso as verified even when email_verified_at is not fillable', function () {
+    config()->set('config-sso.user_model', StrictUser::class);
+
+    mockSocialiteDriver('github', fakeSocialiteUser('new@example.com', 'remote-777'));
+
+    $this->get('/auth/sso/github/callback')->assertRedirect(route('dashboard'));
+
+    expect(User::where('email', 'new@example.com')->value('email_verified_at'))->not->toBeNull();
+});
+
+class StrictUser extends User
+{
+    protected $table = 'users';
+
+    protected $guarded = [];
+
+    protected $fillable = ['name', 'email', 'password'];
+}

@@ -2,6 +2,7 @@
 
 namespace CleaniqueCoders\ConfigSso\Http\Controllers;
 
+use CleaniqueCoders\ConfigSso\Events\UnverifiedAccountClaimed;
 use CleaniqueCoders\ConfigSso\Models\SsoProvider;
 use CleaniqueCoders\ConfigSso\Models\SsoUserProvider;
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -130,6 +131,10 @@ class SsoController
         $user = $model::query()->where('email', $socialiteUser->getEmail())->first();
 
         if ($user) {
+            if ($this->isUnverified($user)) {
+                $this->claimUnverifiedAccount($user);
+            }
+
             return $user;
         }
 
@@ -137,13 +142,16 @@ class SsoController
             return null;
         }
 
+        // forceFill, not create(): email_verified_at is (rightly) not mass-assignable on most
+        // user models, and create() would silently drop it — leaving SSO users on verify-email.
         /** @var Model&Authenticatable $user */
-        $user = $model::query()->create([
+        $user = new $model;
+        $user->forceFill([
             'name' => $socialiteUser->getName() ?? $socialiteUser->getNickname() ?? 'SSO User',
             'email' => $socialiteUser->getEmail(),
             'password' => bcrypt(Str::random(32)),
             'email_verified_at' => now(),
-        ]);
+        ])->save();
 
         $role = config('config-sso.registration.default_role');
 
@@ -152,6 +160,37 @@ class SsoController
         }
 
         return $user;
+    }
+
+    /**
+     * An account whose email was never verified is a claim, not an identity: whoever registered
+     * it may not own the address (pre-registering a victim's email and keeping the password).
+     */
+    protected function isUnverified(Model $user): bool
+    {
+        if (method_exists($user, 'hasVerifiedEmail')) {
+            return ! $user->hasVerifiedEmail();
+        }
+
+        return array_key_exists('email_verified_at', $user->getAttributes())
+            && $user->getAttribute('email_verified_at') === null;
+    }
+
+    /**
+     * The SSO sign-in proves the real owner controls the address, so revoke every credential
+     * the registrant could hold before signing the owner in. App-specific credentials (2FA,
+     * API tokens, passkeys) are revoked by listening for UnverifiedAccountClaimed.
+     */
+    protected function claimUnverifiedAccount(Model $user): void
+    {
+        $user->forceFill([
+            'password' => bcrypt(Str::random(64)),
+            'remember_token' => Str::random(60),
+            'email_verified_at' => now(),
+        ])->save();
+
+        /** @var Model&Authenticatable $user */
+        UnverifiedAccountClaimed::dispatch($user);
     }
 
     /**
